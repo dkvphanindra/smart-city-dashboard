@@ -495,7 +495,7 @@ const Dashboard = () => {
       )}
     </Box>
   );
-};
+;
 
 const AppContent = () => {
   const { theme } = useTheme();
