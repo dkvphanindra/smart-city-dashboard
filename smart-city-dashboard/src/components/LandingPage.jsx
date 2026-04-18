@@ -160,7 +160,27 @@ const buttonHover = {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8 }}
               >
-              
+                <Typography
+                  variant="h2"
+                  sx={{
+                    fontWeight: 900,
+                    color: 'white',
+                    mb: 3,
+                    lineHeight: 1.2,
+                  }}
+                >
+                  <Box
+                    component="span"
+                    sx={{
+                      background: 'linear-gradient(135deg, #00d4ff, #5352ed)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      display: 'block',
+                    }}
+                  >
+                    Smart City Dashboard
+                  </Box>
+                </Typography>
 
                 <Typography variant="h5" sx={{ color: 'rgba(255,255,255,0.8)', mb: 4, lineHeight: 1.6 }}>
                   Real-time monitoring, intelligent navigation, and live event discovery
