@@ -20,15 +20,9 @@ import PersonIcon from '@mui/icons-material/Person';
 import HomeIcon from '@mui/icons-material/Home';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import {
-  generateTrafficData,
-  generatePollutionData,
-  generateEnergyData,
-  generateEvents,
-  generateAlerts,
-  generateKPIMetrics,
   generateMapMarkers,
 } from './data/mockData';
-import { indiaStates, getStateById } from './data/indiaData';
+import { indiaStates } from './data/indiaData';
 import {
   getAirQualityData,
   generateRealisticTraffic,
@@ -44,17 +38,16 @@ import AlertSystem from './components/AlertSystem';
 import EventsList from './components/EventsList';
 import StateSelector from './components/StateSelector';
 import RoutePlanner from './components/RoutePlanner';
-import OnboardingTour from './components/OnboardingTour';
 import LandingPage from './components/LandingPage';
 import AuthPages from './components/AuthPages';
 import { motion } from 'framer-motion';
 import { getRealisticEvents } from './services/eventService';
 import { getRealEvents, getRealAlerts } from './services/realTimeEventsService';
-import { API_CONFIG, getApiStatus } from './config/apiConfig';
 
 const Dashboard = () => {
   const { mode, toggleTheme } = useTheme();
-  const [currentPage, setCurrentPage] = useState('landing'); // 'landing', 'login', 'register', 'dashboard'
+
+  const [currentPage, setCurrentPage] = useState('landing'); // landing | login | register | dashboard
   const [user, setUser] = useState(null);
   const [selectedState, setSelectedState] = useState(indiaStates[0]); // Default: Maharashtra
   const [trafficData, setTrafficData] = useState([]);
@@ -68,18 +61,20 @@ const Dashboard = () => {
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [loading, setLoading] = useState(true);
 
-  // Check if user is already logged in
+  // Init AOS + check if user is already logged in
   useEffect(() => {
-  AOS.init({
-    duration: 800,
-    easing: 'ease-out-cubic',
-    once: true,
-    mirror: false,
-    offset: 60,
-    debounceDelay: 50,
-    throttleDelay: 99,
-  });
-}, []);
+    AOS.init({
+      duration: 800,
+      easing: 'ease-out-cubic',
+      once: true,
+      mirror: false,
+      offset: 60,
+      debounceDelay: 50,
+      throttleDelay: 99,
+    });
+
+    const storedUser = localStorage.getItem('user');
+    const storedToken = localStorage.getItem('token');
 
     if (storedUser && storedToken) {
       try {
@@ -92,64 +87,62 @@ const Dashboard = () => {
         setCurrentPage('landing');
       }
     }
-  };
+  }, []);
 
   const handleAuthSuccess = (userData) => {
-    console.log('📝 handleAuthSuccess called with:', userData);
     setUser(userData);
     setCurrentPage('dashboard');
-    console.log('✅ Page changed to dashboard');
   };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setUser(null);
+    setRouteData(null);
     setCurrentPage('landing');
   };
 
+  // Home button should refresh same dashboard (not go to landing)
   const handleGoHome = async () => {
-  setRouteData(null); // Clears previous route selection
-  await loadStateData(selectedState); // Refresh dashboard data
-};
+    setRouteData(null); // clear route selection
+    await loadStateData(selectedState); // refresh dashboard data
+  };
 
   // Load real-time data for selected state
   const loadStateData = useCallback(async (state) => {
     setLoading(true);
-    const currentHour = getCurrentHour();
-    
+
     // Generate realistic traffic data for different times
     const hours = ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'];
-    const trafficData = hours.map((time, idx) => {
+    const generatedTrafficData = hours.map((time, idx) => {
       const hour = idx * 4;
       const data = generateRealisticTraffic(state, hour);
       return { time, ...data };
     });
-    setTrafficData(trafficData);
+    setTrafficData(generatedTrafficData);
 
     // Get air quality data for capital city
     const aqiData = await getAirQualityData(state.capital);
-    const pollutionData = [
+    const generatedPollutionData = [
       { name: 'PM2.5', value: aqiData.pm25, status: aqiData.pm25 > 60 ? 'High' : aqiData.pm25 > 30 ? 'Moderate' : 'Good' },
       { name: 'PM10', value: aqiData.pm10, status: aqiData.pm10 > 100 ? 'High' : aqiData.pm10 > 50 ? 'Moderate' : 'Good' },
       { name: 'CO2', value: aqiData.co2, status: aqiData.co2 > 40 ? 'High' : aqiData.co2 > 25 ? 'Moderate' : 'Good' },
       { name: 'NO2', value: aqiData.no2, status: aqiData.no2 > 50 ? 'High' : aqiData.no2 > 30 ? 'Moderate' : 'Good' },
       { name: 'O3', value: aqiData.o3, status: aqiData.o3 > 45 ? 'High' : aqiData.o3 > 30 ? 'Moderate' : 'Good' },
     ];
-    setPollutionData(pollutionData);
+    setPollutionData(generatedPollutionData);
 
     // Generate energy data
     const energyResult = generateRealisticEnergy(state);
     setEnergyData(energyResult.sources);
 
-    // Get realistic events for the state
-    const stateEvents = getRealisticEvents(state);
-    setEvents(stateEvents);
+    // Default fallback events first
+    setEvents(getRealisticEvents(state));
 
     // Update KPI metrics with state-specific data
     setKpiData({
       totalPopulation: state.population,
-      activeVehicles: Math.floor(trafficData[trafficData.length - 1].vehicles * 2.5),
+      activeVehicles: Math.floor(generatedTrafficData[generatedTrafficData.length - 1].vehicles * 2.5),
       airQualityIndex: aqiData.aqi,
       energyConsumption: `${energyResult.totalConsumption} MW`,
       wasteCollected: `${Math.floor(parseFloat(state.population) * 0.5)} tons`,
@@ -158,7 +151,7 @@ const Dashboard = () => {
       networkCoverage: `${Math.floor(85 + Math.random() * 14)}%`,
     });
 
-    // Generate events - Try real APIs first, fallback to realistic data
+    // Try real events first, fallback if needed
     try {
       const realEvents = await getRealEvents(state);
       setEvents(realEvents);
@@ -167,74 +160,51 @@ const Dashboard = () => {
       setEvents(getRealisticEvents(state));
     }
 
-    // Generate alerts based on state conditions
+    // Generate alerts
     try {
-      const realAlerts = await getRealAlerts(state, aqiData, trafficData);
+      const realAlerts = await getRealAlerts(state, aqiData, generatedTrafficData);
       setAlerts(realAlerts);
     } catch (error) {
       console.warn('Failed to fetch real alerts, using fallback:', error);
-      const stateAlerts = generateAlertsForState(state, aqiData, trafficData);
+      const stateAlerts = generateAlertsForState(state, aqiData, generatedTrafficData);
       setAlerts(stateAlerts);
     }
 
-    // Generate map markers for the state
+    // Generate map markers
     setMapMarkers(generateMapMarkers(state));
 
     setLastUpdate(new Date());
     setLoading(false);
   }, []);
 
-  // Initial load and state change
-  useEffect(() => {
-    if (user && currentPage === 'dashboard') {
-      loadStateData(selectedState);
-    }
-  }, [selectedState, loadStateData, user, currentPage]);
-
-  // Auto-refresh every 5 minutes (silent update - doesn't disturb user)
-  useEffect(() => {
-    if (!user || currentPage !== 'dashboard') return;
-
-    const interval = setInterval(() => {
-      // Only update data, preserve user interactions like route selection
-      loadStateDataSilent(selectedState);
-    }, 300000); // 5 minutes
-
-    return () => clearInterval(interval);
-  }, [selectedState, user, currentPage]);
-
   // Silent data update (doesn't reset route or user interactions)
-  const loadStateDataSilent = async (state) => {
+  const loadStateDataSilent = useCallback(async (state) => {
     const currentHour = getCurrentHour();
-    
-    // Update traffic data
+
     const hours = ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'];
-    const trafficData = hours.map((time, idx) => {
+    const generatedTrafficData = hours.map((time, idx) => {
       const hour = idx * 4;
       const data = generateRealisticTraffic(state, hour);
       return { time, ...data };
     });
-    setTrafficData(trafficData);
+    setTrafficData(generatedTrafficData);
 
-    // Update air quality
     const aqiData = await getAirQualityData(state.capital);
-    const pollutionData = [
+    const generatedPollutionData = [
       { name: 'PM2.5', value: aqiData.pm25, status: aqiData.pm25 > 60 ? 'High' : aqiData.pm25 > 30 ? 'Moderate' : 'Good' },
       { name: 'PM10', value: aqiData.pm10, status: aqiData.pm10 > 100 ? 'High' : aqiData.pm10 > 50 ? 'Moderate' : 'Good' },
       { name: 'CO2', value: aqiData.co2, status: aqiData.co2 > 40 ? 'High' : aqiData.co2 > 25 ? 'Moderate' : 'Good' },
       { name: 'NO2', value: aqiData.no2, status: aqiData.no2 > 50 ? 'High' : aqiData.no2 > 30 ? 'Moderate' : 'Good' },
       { name: 'O3', value: aqiData.o3, status: aqiData.o3 > 45 ? 'High' : aqiData.o3 > 30 ? 'Moderate' : 'Good' },
     ];
-    setPollutionData(pollutionData);
+    setPollutionData(generatedPollutionData);
 
-    // Update energy
     const energyResult = generateRealisticEnergy(state);
     setEnergyData(energyResult.sources);
 
-    // Update KPIs
     setKpiData({
       totalPopulation: state.population,
-      activeVehicles: Math.floor(trafficData[trafficData.length - 1].vehicles * 2.5),
+      activeVehicles: Math.floor(generatedTrafficData[generatedTrafficData.length - 1].vehicles * 2.5),
       airQualityIndex: aqiData.aqi,
       energyConsumption: `${energyResult.totalConsumption} MW`,
       wasteCollected: `${Math.floor(parseFloat(state.population) * 0.5)} tons`,
@@ -244,21 +214,20 @@ const Dashboard = () => {
     });
 
     setLastUpdate(new Date());
-    // NOTE: Does NOT reset routeData, preserving user's route selection
-  };
+    // routeData preserved intentionally
+  }, []);
 
-  const handleRouteCalculated = (routeData) => {
-    setRouteData(routeData);
+  const handleRouteCalculated = (newRouteData) => {
+    setRouteData(newRouteData);
   };
 
   // Generate state-specific alerts
-  const generateAlertsForState = (state, aqiData, trafficData) => {
-    const alerts = [];
+  const generateAlertsForState = (state, aqiData, generatedTrafficData) => {
+    const generatedAlerts = [];
     const currentTime = new Date();
 
-    // AQI-based alerts
     if (aqiData.aqi > 150) {
-      alerts.push({
+      generatedAlerts.push({
         id: 1,
         type: 'Air Quality',
         severity: 'high',
@@ -267,10 +236,9 @@ const Dashboard = () => {
       });
     }
 
-    // Traffic-based alerts
-    const currentTraffic = trafficData[trafficData.length - 1];
+    const currentTraffic = generatedTrafficData[generatedTrafficData.length - 1];
     if (currentTraffic.congestion > 80) {
-      alerts.push({
+      generatedAlerts.push({
         id: 2,
         type: 'Traffic Jam',
         severity: 'high',
@@ -279,8 +247,7 @@ const Dashboard = () => {
       });
     }
 
-    // Generic alerts
-    alerts.push(
+    generatedAlerts.push(
       {
         id: 3,
         type: 'Weather',
@@ -304,8 +271,26 @@ const Dashboard = () => {
       }
     );
 
-    return alerts;
+    return generatedAlerts;
   };
+
+  // Initial load and state change
+  useEffect(() => {
+    if (user && currentPage === 'dashboard') {
+      loadStateData(selectedState);
+    }
+  }, [selectedState, loadStateData, user, currentPage]);
+
+  // Auto-refresh every 5 minutes (silent update)
+  useEffect(() => {
+    if (!user || currentPage !== 'dashboard') return;
+
+    const interval = setInterval(() => {
+      loadStateDataSilent(selectedState);
+    }, 300000);
+
+    return () => clearInterval(interval);
+  }, [selectedState, user, currentPage, loadStateDataSilent]);
 
   // Protect dashboard if no user
   useEffect(() => {
@@ -316,29 +301,29 @@ const Dashboard = () => {
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-      {/* Show Landing Page */}
+      {/* Landing Page */}
       {currentPage === 'landing' && (
-        <LandingPage 
+        <LandingPage
           onGetStarted={(page) => {
-            // BLOCK dashboard direct access from landing page
+            // Prevent direct dashboard access without login
             if (page === 'dashboard') {
               setCurrentPage('login');
             } else {
               setCurrentPage(page);
             }
-          }} 
+          }}
         />
       )}
 
-      {/* Show Auth Pages (Login/Register) */}
+      {/* Login/Register */}
       {(currentPage === 'login' || currentPage === 'register') && (
-        <AuthPages 
+        <AuthPages
           onAuthSuccess={handleAuthSuccess}
           onBack={() => setCurrentPage('landing')}
         />
       )}
 
-      {/* Show Dashboard ONLY if user is logged in */}
+      {/* Dashboard only if logged in */}
       {currentPage === 'dashboard' && user && (
         <>
           <AppBar
@@ -373,6 +358,7 @@ const Dashboard = () => {
                       </Typography>
                     </Box>
                   )}
+
                   <Typography variant="body2" sx={{ opacity: 0.9, color: 'white' }}>
                     {selectedState.name} • Updated: {lastUpdate.toLocaleTimeString()}
                   </Typography>
@@ -391,9 +377,9 @@ const Dashboard = () => {
                   </IconButton>
 
                   {user && (
-                    <IconButton 
-                      onClick={handleLogout} 
-                      color="inherit" 
+                    <IconButton
+                      onClick={handleLogout}
+                      color="inherit"
                       sx={{ ml: 1 }}
                       title="Logout"
                     >
@@ -438,7 +424,10 @@ const Dashboard = () => {
                 transition={{ duration: 0.5, delay: 0.45 }}
               >
                 <Box sx={{ mb: 4 }}>
-                  <RoutePlanner stateCenter={selectedState.center} onRouteCalculated={handleRouteCalculated} />
+                  <RoutePlanner
+                    stateCenter={selectedState.center}
+                    onRouteCalculated={handleRouteCalculated}
+                  />
                 </Box>
               </motion.div>
             )}
@@ -495,11 +484,11 @@ const Dashboard = () => {
       )}
     </Box>
   );
-;
+};
 
 const AppContent = () => {
   const { theme } = useTheme();
-  
+
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
