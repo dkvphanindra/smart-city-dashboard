@@ -33,3 +33,9 @@ Thumbs.db
 
 # Coverage
 coverage/
+
+API keys and sensitive files
+API_KEYS_SETUP.md
+API_SETUP.md
+BACKEND_SETUP_GUIDE.md
+FRONTEND_SETUP_GUIDE.md
