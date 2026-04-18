@@ -26,3 +26,10 @@ dist-ssr
 *.sln
 *.sw?
 *apiconfig.js
+
+.env
+.env.local
+.env.production
+**/.env
+**/.env.local
+**/.env.production
