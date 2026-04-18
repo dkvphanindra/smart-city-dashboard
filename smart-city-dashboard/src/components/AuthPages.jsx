@@ -35,9 +35,17 @@ const AuthPages = ({ onAuthSuccess, onBack }) => {
 
     try {
       const endpoint = tab === 0 ? '/register' : '/login';
-      const payload = tab === 0 
-        ? { name: formData.name, email: formData.email, password: formData.password }
-        : { email: formData.email, password: formData.password };
+      const payload =
+        tab === 0
+          ? {
+              name: formData.name,
+              email: formData.email,
+              password: formData.password,
+            }
+          : {
+              email: formData.email,
+              password: formData.password,
+            };
 
       const response = await fetch(`${API_URL}${endpoint}`, {
         method: 'POST',
@@ -52,17 +60,18 @@ const AuthPages = ({ onAuthSuccess, onBack }) => {
         localStorage.setItem('token', data.data.token);
         localStorage.setItem('user', JSON.stringify(data.data));
         setSuccess(tab === 0 ? 'Registration successful!' : 'Login successful!');
+
         setTimeout(() => {
           console.log('🚀 Calling onAuthSuccess...');
           onAuthSuccess(data.data);
         }, 1000);
       } else {
         console.error('❌ Auth failed:', data.message);
-        setError(data.message);
+        setError(data.message || 'Authentication failed');
       }
     } catch (err) {
-      setError('Network error. Please check if backend is running.');
       console.error('Auth error:', err);
+      setError('Network error. Please check if backend is running.');
     } finally {
       setLoading(false);
     }
@@ -94,43 +103,70 @@ const AuthPages = ({ onAuthSuccess, onBack }) => {
           }}
         >
           <CardContent sx={{ p: 4 }}>
-            {/* Back Button (acts as Home redirect to landing page) */}
-            <IconButton
-              onClick={onBack}
-              sx={{ mb: 2, color: 'white' }}
-            >
+            <IconButton onClick={onBack} sx={{ mb: 2, color: 'white' }}>
               <ArrowBackIcon />
             </IconButton>
 
-            <Typography 
-              variant="h4" 
-              sx={{ 
-                textAlign: 'center', 
-                mb: 3, 
-                color: 'white', 
-                fontWeight: 800 
+            <Typography
+              variant="h4"
+              sx={{
+                textAlign: 'center',
+                mb: 1,
+                color: 'white',
+                fontWeight: 800,
               }}
             >
               Smart City Dashboard
             </Typography>
 
-            <Tabs 
-              value={tab} 
+            <Typography
+              variant="body1"
+              sx={{
+                textAlign: 'center',
+                mb: 3,
+                color: 'rgba(255,255,255,0.7)',
+              }}
+            >
+              {tab === 0 ? 'Create your account to continue' : 'Login to access your dashboard'}
+            </Typography>
+
+            <Tabs
+              value={tab}
               onChange={(e, v) => {
                 setTab(v);
                 setError('');
                 setSuccess('');
-              }} 
-              sx={{ 
+              }}
+              centered
+              sx={{
                 mb: 3,
-                '& .MuiTab-root': { color: 'rgba(255,255,255,0.7)' },
-                '& .Mui-selected': { color: 'white !important' },
-                '& .MuiTabs-indicator': { backgroundColor: '#00d4ff' },
+                '& .MuiTab-root': {
+                  color: 'rgba(255,255,255,0.7)',
+                  fontWeight: 600,
+                },
+                '& .Mui-selected': {
+                  color: '#00d4ff !important',
+                },
+                '& .MuiTabs-indicator': {
+                  backgroundColor: '#00d4ff',
+                },
               }}
             >
               <Tab label="Register" />
               <Tab label="Login" />
             </Tabs>
+
+            {error && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {error}
+              </Alert>
+            )}
+
+            {success && (
+              <Alert severity="success" sx={{ mb: 2 }}>
+                {success}
+              </Alert>
+            )}
 
             <form onSubmit={handleSubmit}>
               {tab === 0 && (
@@ -139,14 +175,15 @@ const AuthPages = ({ onAuthSuccess, onBack }) => {
                   label="Full Name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  sx={{ 
+                  sx={{
                     mb: 2,
-                    '& .MuiOutlinedInput-root': {
-                      color: 'white',
-                      '& fieldset': { borderColor: 'rgba(255,255,255,0.3)' },
-                      '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.5)' },
-                    },
+                    '& .MuiInputBase-input': { color: 'white' },
                     '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.7)' },
+                    '& .MuiOutlinedInput-root': {
+                      '& fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
+                      '&:hover fieldset': { borderColor: '#00d4ff' },
+                      '&.Mui-focused fieldset': { borderColor: '#00d4ff' },
+                    },
                   }}
                   required
                 />
@@ -158,14 +195,15 @@ const AuthPages = ({ onAuthSuccess, onBack }) => {
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                sx={{ 
+                sx={{
                   mb: 2,
-                  '& .MuiOutlinedInput-root': {
-                    color: 'white',
-                    '& fieldset': { borderColor: 'rgba(255,255,255,0.3)' },
-                    '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.5)' },
-                  },
+                  '& .MuiInputBase-input': { color: 'white' },
                   '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.7)' },
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
+                    '&:hover fieldset': { borderColor: '#00d4ff' },
+                    '&.Mui-focused fieldset': { borderColor: '#00d4ff' },
+                  },
                 }}
                 required
               />
@@ -176,29 +214,18 @@ const AuthPages = ({ onAuthSuccess, onBack }) => {
                 type="password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                sx={{ 
-                  mb: 2,
-                  '& .MuiOutlinedInput-root': {
-                    color: 'white',
-                    '& fieldset': { borderColor: 'rgba(255,255,255,0.3)' },
-                    '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.5)' },
-                  },
+                sx={{
+                  mb: 3,
+                  '& .MuiInputBase-input': { color: 'white' },
                   '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.7)' },
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
+                    '&:hover fieldset': { borderColor: '#00d4ff' },
+                    '&.Mui-focused fieldset': { borderColor: '#00d4ff' },
+                  },
                 }}
                 required
               />
-
-              {error && (
-                <Alert severity="error" sx={{ mb: 2 }}>
-                  {error}
-                </Alert>
-              )}
-
-              {success && (
-                <Alert severity="success" sx={{ mb: 2 }}>
-                  {success}
-                </Alert>
-              )}
 
               <Button
                 type="submit"
@@ -210,41 +237,15 @@ const AuthPages = ({ onAuthSuccess, onBack }) => {
                   background: 'linear-gradient(135deg, #00d4ff, #5352ed)',
                   fontWeight: 700,
                   fontSize: '16px',
+                  borderRadius: '12px',
                   '&:hover': {
-                    background: 'linear-gradient(135deg, #00b8e6, #4a4bd4)',
+                    background: 'linear-gradient(135deg, #00b8e6, #4742d6)',
                   },
                 }}
               >
-                {loading ? '⏳ Please wait...' : tab === 0 ? '🚀 Create Account' : '🔐 Login'}
+                {loading ? 'Please wait...' : tab === 0 ? 'Create Account' : 'Login'}
               </Button>
             </form>
-
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                mt: 3, 
-                textAlign: 'center', 
-                color: 'rgba(255,255,255,0.5)' 
-              }}
-            >
-              {tab === 0 ? 'Already have an account?' : "Don't have an account?"}{' '}
-              <Box
-                component="span"
-                onClick={() => {
-                  setTab(tab === 0 ? 1 : 0);
-                  setError('');
-                  setSuccess('');
-                }}
-                sx={{ 
-                  color: '#00d4ff', 
-                  cursor: 'pointer',
-                  fontWeight: 600,
-                  '&:hover': { textDecoration: 'underline' },
-                }}
-              >
-                {tab === 0 ? 'Login here' : 'Register here'}
-              </Box>
-            </Typography>
           </CardContent>
         </Card>
       </motion.div>
