@@ -92,7 +92,7 @@ const Dashboard = () => {
         setCurrentPage('landing');
       }
     }
-  }, []);
+  }, [];
 
   const handleAuthSuccess = (userData) => {
     console.log('📝 handleAuthSuccess called with:', userData);
