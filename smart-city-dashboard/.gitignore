@@ -39,3 +39,16 @@ API_KEYS_SETUP.md
 API_SETUP.md
 BACKEND_SETUP_GUIDE.md
 FRONTEND_SETUP_GUIDE.md
+
+node_modules/
+**/node_modules/
+.env
+.env.local
+.env.production
+**/.env
+**/.env.local
+**/.env.production
+dist/
+build/
+**/dist/
+**/build/
