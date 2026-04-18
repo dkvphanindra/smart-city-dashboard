@@ -1,3 +1,6 @@
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+
 import { useState, useEffect, useCallback } from 'react';
 import {
   ThemeProvider as MuiThemeProvider,
@@ -67,8 +70,16 @@ const Dashboard = () => {
 
   // Check if user is already logged in
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const storedToken = localStorage.getItem('token');
+  AOS.init({
+    duration: 800,
+    easing: 'ease-out-cubic',
+    once: true,
+    mirror: false,
+    offset: 60,
+    debounceDelay: 50,
+    throttleDelay: 99,
+  });
+}, []);
 
     if (storedUser && storedToken) {
       try {

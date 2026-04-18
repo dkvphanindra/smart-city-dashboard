@@ -6,22 +6,21 @@
 
 export const API_CONFIG = {
   // Weather & Environmental Data
-  OPENWEATHER_API_KEY: import.meta.env.VITE_OPENWEATHER_API_KEY || '',
+  OPENWEATHER_API_KEY: import.meta.env.VITE_OPENWEATHER_API_KEY ,
   
   // News & Events
-  NEWS_API_KEY: import.meta.env.VITE_NEWS_API_KEY || '',
+  NEWS_API_KEY: import.meta.env.VITE_NEWS_API_KEY ,
   
   // Ticketmaster Events
-  TICKETMASTER_API_KEY: import.meta.env.VITE_TICKETMASTER_API_KEY || '',
+  TICKETMASTER_API_KEY: import.meta.env.VITE_TICKETMASTER_API_KEY ,
   
   // Eventbrite (Optional)
-  EVENTBRITE_API_KEY: import.meta.env.VITE_EVENTBRITE_API_KEY || '',
+  EVENTBRITE_API_KEY: import.meta.env.VITE_EVENTBRITE_API_KEY ,
   
   // Air Quality (Optional - AQICN provides free API)
-  AQICN_API_KEY: import.meta.env.VITE_AQICN_API_KEY || '',
+  AQICN_API_KEY: import.meta.env.VITE_AQICN_API_KEY ,
   
   // Google Maps (Optional - for better routing)
-  GOOGLE_MAPS_API_KEY: '',
 };
 
 export const isApiKeyConfigured = (apiKey) => {

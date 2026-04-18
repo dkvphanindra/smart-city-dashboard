@@ -21,6 +21,41 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import LoginIcon from '@mui/icons-material/Login';
 
 const LandingPage = ({ onGetStarted }) => {
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.7, ease: 'easeOut' },
+  },
+};
+
+const staggerContainer = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const floatAnimation = {
+  y: [0, -12, 0],
+  transition: {
+    duration: 4,
+    repeat: Infinity,
+    ease: 'easeInOut',
+  },
+};
+
+const buttonHover = {
+  scale: 1.04,
+  y: -2,
+  transition: { duration: 0.2 },
+};
+
   const features = [
     {
       icon: <LocationOnIcon sx={{ fontSize: 48, color: 'primary.main' }} />,
