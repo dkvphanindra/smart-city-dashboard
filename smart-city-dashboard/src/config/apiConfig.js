@@ -11,19 +11,19 @@
 
 export const API_CONFIG = {
   // Weather & Environmental Data
-  OPENWEATHER_API_KEY: 'eb1c8af3b942be28e611daa672e3c714',
+  OPENWEATHER_API_KEY: import.meta.env.VITE_OPENWEATHER_API_KEY ,
   
   // News & Events
-  NEWS_API_KEY: 'dh00pZLRwsdKBFHcm1Nnkz4K2s5okae3',
+  NEWS_API_KEY: import.meta.env.VITE_NEWS_API_KEY ,
   
   // Ticketmaster Events
-  TICKETMASTER_API_KEY: 'o7GgJLKEOrwAAIz07uwYUd0RkAbi6mH4',
+  TICKETMASTER_API_KEY: import.meta.env.VITE_TICKETMASTER_API_KEY ,
   
   // Eventbrite (Optional)
-  EVENTBRITE_API_KEY: 'ASOIKQSPVRKNXHFNWR',
+  EVENTBRITE_API_KEY: import.meta.env.VITE_EVENTBRITE_API_KEY ,
   
   // Air Quality (Optional - AQICN provides free API)
-  AQICN_API_KEY: 'YOUR_AQICN_API_KEY',
+  AQICN_API_KEY: import.meta.env.VITE_AQICN_API_KEY ,
   
   // Google Maps (Optional - for better routing)
   GOOGLE_MAPS_API_KEY: 'YOUR_GOOGLE_MAPS_API_KEY',
