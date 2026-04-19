@@ -32,13 +32,13 @@ app.get('/api/health', (req, res) => {
     message: 'Smart City Backend is running',
     timestamp: new Date().toISOString(),
   });
+});
 
 app.get("/", (req, res) => {
   res.json({
     success: true,
     message: "Smart City Backend Root is running"
   });
-});
 });
 
 const PORT = process.env.PORT || 5000;
