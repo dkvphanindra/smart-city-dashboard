@@ -13,12 +13,7 @@ connectDB();
 const app = express();
 
 // Middleware
-app.use(cors({
-  origin: [
-    "https://your-frontend-site.onrender.com",
-    "http://localhost:5173"
-  ]
-}));
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
