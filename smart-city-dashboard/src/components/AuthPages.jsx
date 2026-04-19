@@ -14,7 +14,9 @@ import {
 import { motion } from 'framer-motion';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || 'https://smart-city-backend-irzy.onrender.com/api/auth';
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:5000/api/auth'
+  : 'https://smart-city-backend-irzy.onrender.com/api/auth';
 
 const AuthPages = ({ onAuthSuccess, onBack }) => {
   const [tab, setTab] = useState(0);
