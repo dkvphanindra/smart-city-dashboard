@@ -1,10 +1,8 @@
-import { useState } from 'react';
 import {
   Box,
   Button,
   Typography,
   Container,
-  Grid,
   Card,
   CardContent,
   AppBar,
@@ -12,70 +10,37 @@ import {
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import TrafficIcon from '@mui/icons-material/Traffic';
 import EventIcon from '@mui/icons-material/Event';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import SpeedIcon from '@mui/icons-material/Speed';
-import PublicIcon from '@mui/icons-material/Public';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import LoginIcon from '@mui/icons-material/Login';
 
 const LandingPage = ({ onGetStarted }) => {
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: 'easeOut' },
-  },
-};
-
-const staggerContainer = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.1,
-    },
-  },
-};
-
-const floatAnimation = {
-  y: [0, -12, 0],
-  transition: {
-    duration: 4,
-    repeat: Infinity,
-    ease: 'easeInOut',
-  },
-};
-
-const buttonHover = {
-  scale: 1.04,
-  y: -2,
-  transition: { duration: 0.2 },
-};
-
   const features = [
     {
       icon: <LocationOnIcon sx={{ fontSize: 48, color: 'primary.main' }} />,
       title: 'Real-Time State Data',
-      description: 'Monitor air quality, traffic, and energy across all 28 Indian states with 90%+ accuracy',
+      description:
+        'Monitor air quality, traffic, and energy across all 28 Indian states with 90%+ accuracy',
     },
     {
       icon: <SpeedIcon sx={{ fontSize: 48, color: 'secondary.main' }} />,
       title: 'Smart Navigation',
-      description: 'AI-powered route planning with traffic avoidance and real-time congestion updates',
+      description:
+        'AI-powered route planning with traffic avoidance and real-time congestion updates',
     },
     {
       icon: <EventIcon sx={{ fontSize: 48, color: 'primary.main' }} />,
       title: 'Live Events',
-      description: 'Discover festivals, concerts, and conferences happening in your city right now',
+      description:
+        'Discover festivals, concerts, and conferences happening in your city right now',
     },
     {
       icon: <NotificationsIcon sx={{ fontSize: 48, color: 'secondary.main' }} />,
       title: 'Instant Alerts',
-      description: 'Get notified about traffic jams, air quality issues, and weather changes instantly',
+      description:
+        'Get notified about traffic jams, air quality issues, and weather changes instantly',
     },
   ];
 
@@ -153,8 +118,21 @@ const buttonHover = {
         />
 
         <Container maxWidth="lg">
-          <Grid container spacing={6} alignItems="center">
-            <Grid item xs={12} md={7}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              gap: 4,
+            }}
+          >
+            {/* Left Side */}
+            <Box
+              sx={{
+                flex: '1 1 500px',
+                minWidth: '300px',
+              }}
+            >
               <motion.div
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -182,7 +160,10 @@ const buttonHover = {
                   </Box>
                 </Typography>
 
-                <Typography variant="h5" sx={{ color: 'rgba(255,255,255,0.8)', mb: 4, lineHeight: 1.6 }}>
+                <Typography
+                  variant="h5"
+                  sx={{ color: 'rgba(255,255,255,0.8)', mb: 4, lineHeight: 1.6 }}
+                >
                   Real-time monitoring, intelligent navigation, and live event discovery
                   across all Indian states with 90%+ data accuracy.
                 </Typography>
@@ -221,41 +202,51 @@ const buttonHover = {
                   </Button>
                 </Box>
               </motion.div>
-            </Grid>
+            </Box>
 
-            <Grid item xs={12} md={5}>
+            {/* Right Side */}
+            <Box
+              sx={{
+                flex: '1 1 350px',
+                minWidth: '280px',
+              }}
+            >
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, delay: 0.3 }}
               >
-                {/* Stats Cards */}
-                <Grid container spacing={2}>
+                <Box
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                    gap: 2,
+                  }}
+                >
                   {stats.map((stat, index) => (
-                    <Grid item xs={6} key={index}>
-                      <Card
-                        sx={{
-                          background: 'rgba(255,255,255,0.05)',
-                          backdropFilter: 'blur(10px)',
-                          border: '1px solid rgba(255,255,255,0.1)',
-                          borderRadius: '16px',
-                          textAlign: 'center',
-                          p: 2,
-                        }}
-                      >
-                        <Typography variant="h3" sx={{ fontWeight: 900, color: 'primary.main' }}>
-                          {stat.value}
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
-                          {stat.label}
-                        </Typography>
-                      </Card>
-                    </Grid>
+                    <Card
+                      key={index}
+                      sx={{
+                        background: 'rgba(255,255,255,0.05)',
+                        backdropFilter: 'blur(10px)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: '16px',
+                        textAlign: 'center',
+                        p: 2,
+                      }}
+                    >
+                      <Typography variant="h3" sx={{ fontWeight: 900, color: 'primary.main' }}>
+                        {stat.value}
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                        {stat.label}
+                      </Typography>
+                    </Card>
                   ))}
-                </Grid>
+                </Box>
               </motion.div>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </Container>
       </Box>
 
@@ -292,42 +283,54 @@ const buttonHover = {
             </Typography>
           </motion.div>
 
-          <Grid container spacing={4}>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: '1fr',
+                sm: '1fr 1fr',
+                lg: '1fr 1fr 1fr 1fr',
+              },
+              gap: 4,
+            }}
+          >
             {features.map((feature, index) => (
-              <Grid item xs={12} md={6} lg={3} key={index}>
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <Card
+                  sx={{
+                    height: '100%',
+                    background: 'linear-gradient(135deg, rgba(0,212,255,0.1), rgba(83,82,237,0.1))',
+                    border: '1px solid rgba(0,212,255,0.2)',
+                    borderRadius: '20px',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      transform: 'translateY(-10px)',
+                      boxShadow: '0 20px 40px rgba(0,212,255,0.2)',
+                    },
+                  }}
                 >
-                  <Card
-                    sx={{
-                      height: '100%',
-                      background: 'linear-gradient(135deg, rgba(0,212,255,0.1), rgba(83,82,237,0.1))',
-                      border: '1px solid rgba(0,212,255,0.2)',
-                      borderRadius: '20px',
-                      transition: 'all 0.3s ease',
-                      '&:hover': {
-                        transform: 'translateY(-10px)',
-                        boxShadow: '0 20px 40px rgba(0,212,255,0.2)',
-                      },
-                    }}
-                  >
-                    <CardContent sx={{ p: 4 }}>
-                      <Box sx={{ mb: 2 }}>{feature.icon}</Box>
-                      <Typography variant="h5" sx={{ fontWeight: 700, color: 'white', mb: 2 }}>
-                        {feature.title}
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}>
-                        {feature.description}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              </Grid>
+                  <CardContent sx={{ p: 4 }}>
+                    <Box sx={{ mb: 2 }}>{feature.icon}</Box>
+                    <Typography variant="h5" sx={{ fontWeight: 700, color: 'white', mb: 2 }}>
+                      {feature.title}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: 'rgba(255,255,255,0.7)', lineHeight: 1.6 }}
+                    >
+                      {feature.description}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
-          </Grid>
+          </Box>
         </Container>
       </Box>
 
@@ -366,7 +369,7 @@ const buttonHover = {
                 borderRadius: '12px',
               }}
             >
-              Get Started Now - It's Free!
+              Get Started Now - It&apos;s Free!
             </Button>
           </motion.div>
         </Container>
