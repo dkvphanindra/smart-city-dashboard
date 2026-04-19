@@ -13,7 +13,12 @@ connectDB();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    "https://your-frontend-site.onrender.com",
+    "http://localhost:5173"
+  ]
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -27,6 +32,13 @@ app.get('/api/health', (req, res) => {
     message: 'Smart City Backend is running',
     timestamp: new Date().toISOString(),
   });
+
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "Smart City Backend Root is running"
+  });
+});
 });
 
 const PORT = process.env.PORT || 5000;
